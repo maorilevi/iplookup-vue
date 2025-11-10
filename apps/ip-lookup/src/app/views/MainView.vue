@@ -161,17 +161,20 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '../../styles/variables' as *;
+
 .main-view {
   padding: 40px 20px;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: $bg-gray-light;
   direction: ltr;
   text-align: left;
   font-family: system-ui;
+  
   &__container {
-    background: white;
+    background: $bg-white;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: $shadow-md;
     max-width: 900px;
     margin: 0 auto;
   }
@@ -179,7 +182,7 @@ onUnmounted(() => {
   &__title {
     font-size: 24px;
     font-weight: 700;
-    color: #333;
+    color: $text-primary;
     margin: 0;
     padding: 16px 28px;
     text-align: left;
@@ -188,14 +191,14 @@ onUnmounted(() => {
 
   &__divider {
     border: none;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid $border-color-light;
     margin: 0;
   }
 
   &__description {
     padding: 16px 28px;
     font-size: 14px;
-    color: #666;
+    color: $text-secondary;
     margin: 0;
     text-align: left;
     direction: ltr;

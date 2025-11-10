@@ -102,18 +102,20 @@ function getFlagUrl(countryCode: string): string {
 </script>
 
 <style lang="scss" scoped>
+@use '../../styles/variables' as *;
+
 .ip-item {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 12px 0;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid $border-color-light;
   direction: ltr;
   text-align: left;
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #f9f9f9;
+    background-color: $bg-gray-lighter;
   }
 
   &:last-child {
@@ -122,19 +124,19 @@ function getFlagUrl(countryCode: string): string {
 
   // Block Modifiers
   &--status-idle {
-    background-color: #fff;
+    background-color: $status-idle-bg;
   }
 
   &--status-searching {
-    background-color: #e3f2fd;
+    background-color: $status-searching-bg;
   }
 
   &--status-success {
-    background-color: #e8f5e9;
+    background-color: $status-success-bg;
   }
 
   &--status-error {
-    background-color: #ffebee;
+    background-color: $status-error-bg;
   }
 
   // Elements
@@ -143,8 +145,8 @@ function getFlagUrl(countryCode: string): string {
     width: 30px;
     font-weight: 600;
     font-size: 13px;
-    color: #666;
-    background: #e5e5e5;
+    color: $text-secondary;
+    background: $border-color-dark;
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -156,7 +158,7 @@ function getFlagUrl(countryCode: string): string {
   &__input {
     flex: 1;
     padding: 8px 12px;
-    border: 1px solid #ddd;
+    border: 1px solid $border-color;
     border-radius: 4px;
     font-size: 14px;
     transition: border-color 0.3s;
@@ -164,26 +166,26 @@ function getFlagUrl(countryCode: string): string {
 
     &:focus {
       outline: none;
-      border-color: #2196f3;
+      border-color: $color-primary;
     }
 
     &:disabled {
-      background: #f5f5f5;
+      background: $bg-gray-light;
       cursor: not-allowed;
     }
 
     &--error {
-      border-color: #f44336;
+      border-color: $color-error;
 
       &:focus {
-        border-color: #f44336;
+        border-color: $color-error;
       }
     }
   }
 
   &__flag {
     object-fit: contain;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: $shadow-sm;
     height: auto;
     border-radius: 3px;
     width: 35px;
@@ -193,7 +195,7 @@ function getFlagUrl(countryCode: string): string {
     font-family: 'Courier New', monospace;
     font-size: 14px;
     font-weight: 600;
-    color: #535353;
+    color: $text-tertiary;
     min-width: 80px;
     text-align: center;
   }
@@ -202,7 +204,7 @@ function getFlagUrl(countryCode: string): string {
     background: none;
     border: none;
     font-size: 24px;
-    color: #999;
+    color: $text-light;
     cursor: pointer;
     padding: 0;
     width: 24px;
@@ -215,8 +217,8 @@ function getFlagUrl(countryCode: string): string {
     flex-shrink: 0;
 
     &:hover {
-      background: #f44336;
-      color: #fff;
+      background: $color-error;
+      color: $bg-white;
     }
   }
 }
@@ -228,11 +230,11 @@ function getFlagUrl(countryCode: string): string {
 .ip-item-error {
   padding: 8px 16px;
   padding-left: 58px; // Align with input (after number circle)
-  color: #f44336;
+  color: $color-error;
   font-size: 12px;
   direction: ltr;
   text-align: left;
-  background-color: #fff;
+  background-color: $bg-white;
   animation: slideDown 0.3s ease-out;
 }
 

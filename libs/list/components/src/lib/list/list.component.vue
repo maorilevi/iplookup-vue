@@ -114,6 +114,8 @@ defineExpose({
 </template>
 
 <style lang="scss" scoped>
+@use '../../styles/variables' as *;
+
 .list-container {
   display: flex;
   flex-direction: column;
@@ -130,7 +132,7 @@ defineExpose({
 
 .list-divider {
   border: none;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid $border-color-light;
   margin: 0;
 }
 
@@ -144,10 +146,10 @@ defineExpose({
 .empty-state {
   padding: 40px 20px;
   text-align: center;
-  color: #666;
+  color: $text-secondary;
   font-size: 14px;
-  background-color: #f9f9f9;
-  border: 2px dashed #ddd;
+  background-color: $bg-gray-lighter;
+  border: 2px dashed $border-color;
   border-radius: 8px;
 }
 </style>
