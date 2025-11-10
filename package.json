@@ -4,9 +4,9 @@
   "license": "MIT",
   "scripts": {},
   "private": true,
-  "dependencies": {},
   "devDependencies": {
     "@nx/js": "22.0.2",
+    "@nx/vue": "^22.0.2",
     "@nx/workspace": "22.0.2",
     "nx": "22.0.2"
   }
