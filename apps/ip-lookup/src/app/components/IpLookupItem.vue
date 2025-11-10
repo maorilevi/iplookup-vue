@@ -180,7 +180,7 @@ function getFlagUrl(countryCode: string): string {
     border: 1px solid $border-color;
     border-radius: 4px;
     font-size: 14px;
-    transition: border-color 0.3s;
+    transition: all 0.3s;
     min-width: 0;
 
     &:focus {
@@ -191,6 +191,13 @@ function getFlagUrl(countryCode: string): string {
     &:disabled {
       background: $bg-gray-light;
       cursor: not-allowed;
+    }
+
+    &[readonly] {
+      background: $bg-gray-light;
+      color: $text-secondary;
+      cursor: not-allowed;
+      border-color: $border-color-light;
     }
 
     &--error {
@@ -229,7 +236,6 @@ function getFlagUrl(countryCode: string): string {
   }
 
   &__error-icon {
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -238,38 +244,6 @@ function getFlagUrl(countryCode: string): string {
     font-size: 24px;
     color: $color-error;
     cursor: help;
-    
-    &:hover .ip-item__tooltip {
-      opacity: 1;
-      visibility: visible;
-    }
-  }
-
-  &__tooltip {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    background-color: $text-primary;
-    color: $bg-white;
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 12px;
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s, visibility 0.2s;
-    pointer-events: none;
-    z-index: 1000;
-    box-shadow: $shadow-md;
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 100%;
-      right: 12px;
-      border: 6px solid transparent;
-      border-bottom-color: $text-primary;
-    }
   }
 
   &__delete {
