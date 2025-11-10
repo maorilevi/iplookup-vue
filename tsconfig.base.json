@@ -1,0 +1,28 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@ip-lookup": ["apps/ip-lookup/src/app/index.ts"],
+      "@list-components": ["libs/list/components/src/public-api/index.ts"],
+      "@list-components/*": ["libs/list/components/src/public-api/*"],
+      "@list-types": ["libs/list/types/src/public-api/index.ts"],
+      "@list-types/*": ["libs/list/types/src/public-api/*"],
+      "@list-composables": ["libs/list/composables/src/index.ts"],
+      "@list-utils": ["libs/list/utils/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

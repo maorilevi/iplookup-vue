@@ -1,0 +1,204 @@
+<template>
+  <section class="main-view">
+    <div class="main-view__container">
+      <h2 class="main-view__title">IP Lookup</h2>
+      <hr class="main-view__divider" />
+      <p class="main-view__description">Enter one or more IP addresses and get their country</p>
+
+      <List
+        :items="items"
+        :virtualScroll="false"
+        :empty-message="'No IP addresses added yet. Click Add to get started.'"
+        @add="addItem"
+        @itemChange="onItemChange"
+        @itemBlur="onItemBlur"
+        @itemDelete="onItemDelete"
+      >
+        <!-- Custom IP item component -->
+        <template #item="{ item, onChange, onBlur, onDelete, index }">
+          <IpLookupItem
+            :item="item"
+            :index="index"
+            @change="onChange"
+            @blur="onBlur"
+            @delete="onDelete"
+          />
+        </template>
+      </List>
+    </div>
+  </section>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import List from '@list-components/../lib/list/list.component.vue'
+import IpLookupItem from '../components/IpLookupItem.vue'
+import type { IpLookupItemModel } from '../models/ipLookup.model'
+import { lookupIp } from '../services/ipLookup.service'
+import { isValidIp } from '@list-utils'
+
+// The main state array
+const items = ref<IpLookupItemModel[]>([])
+
+// Store time update intervals per value
+const timeIntervals = new Map<string, number>()
+
+function addItem() {
+  const uuid = crypto.randomUUID()
+  items.value.push({
+    id: uuid,
+    value: '', // Use UUID as initial value
+    status: 'idle',
+  })
+}
+
+function onItemChange({ id, value }: { id: string; value: string }) {
+  const item = items.value.find(i => i.id === id)
+  if (item) {
+    item.label = value // Update label (what's shown in input)
+    item.value = value || item.id // Update value for key (or keep UUID if empty)
+    // Clear error when user starts typing again
+    if (item.status === 'error') {
+      item.status = 'idle'
+      item.error = undefined
+    }
+  }
+}
+
+async function onItemBlur({ id }: { id: string }) {
+  const item = items.value.find(i => i.id === id)
+  if (!item) return
+
+  const trimmedValue = item.value.trim()
+
+  // If value is empty or is UUID, don't process
+  if (!trimmedValue || trimmedValue === item.id) return
+
+  // Validate IP format
+  if (!isValidIp(trimmedValue)) {
+    item.status = 'error'
+    item.error = 'Invalid IP address format'
+    return
+  }
+
+  // Clear previous interval if exists
+  const existingInterval = timeIntervals.get(item.value)
+  if (existingInterval) {
+    clearInterval(existingInterval)
+    timeIntervals.delete(item.value)
+  }
+
+  const ipAddress = trimmedValue
+
+  // Fetch from API (no cache)
+  item.status = 'searching'
+  item.error = undefined
+
+  try {
+    const data = await lookupIp(ipAddress)
+
+    item.country = data.country
+    item.countryCode = data.countryCode
+    item.timezone = data.timezone
+    item.city = data.city
+    item.region = data.region
+
+    // Update time immediately
+    updateLocalTime(item)
+
+    // Start live clock update for the IP's timezone
+    const interval = window.setInterval(() => {
+      updateLocalTime(item)
+    }, 1000)
+
+    timeIntervals.set(item.id, interval)
+
+    item.status = 'success'
+  } catch (err: any) {
+    item.status = 'error'
+    item.error = err.message || 'Failed to lookup IP'
+  }
+}
+
+function updateLocalTime(item: IpLookupItemModel) {
+  if (!item.timezone) return
+
+  try {
+    const now = new Date()
+    const formatted = now.toLocaleTimeString('en-GB', {
+      timeZone: item.timezone,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    })
+    item.localTime = formatted
+  } catch {
+    item.localTime = '--:--:--'
+  }
+}
+
+function onItemDelete({ id }: { id: string }) {
+  const item = items.value.find(i => i.id === id)
+
+  // Clear interval when item is deleted
+  if (item) {
+    const existingInterval = timeIntervals.get(item.value)
+    if (existingInterval) {
+      clearInterval(existingInterval)
+      timeIntervals.delete(item.value)
+    }
+  }
+
+  items.value = items.value.filter(i => i.id !== id)
+}
+
+// Cleanup all intervals on unmount
+import { onUnmounted } from 'vue'
+onUnmounted(() => {
+  timeIntervals.forEach(interval => clearInterval(interval))
+  timeIntervals.clear()
+})
+</script>
+
+<style lang="scss" scoped>
+.main-view {
+  padding: 40px 20px;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  direction: ltr;
+  text-align: left;
+  font-family: system-ui;
+  &__container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    padding: 16px 28px;
+    text-align: left;
+    direction: ltr;
+  }
+
+  &__divider {
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    margin: 0;
+  }
+
+  &__description {
+    padding: 16px 28px;
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    text-align: left;
+    direction: ltr;
+  }
+}
+</style>
