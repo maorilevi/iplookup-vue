@@ -141,6 +141,7 @@ defineExpose({
   min-height: 500px;
   max-height: 500px;
   overflow-y: auto;
+  overflow-x: visible;
 }
 
 .empty-state {

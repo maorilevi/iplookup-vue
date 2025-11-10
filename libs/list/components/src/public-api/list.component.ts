@@ -1,1 +1,1 @@
-export * from '../lib/list/list.component.vue'
+export {default as ListComponent} from '../lib/list/list.component.vue'

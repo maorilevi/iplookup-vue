@@ -5,7 +5,7 @@
       <hr class="main-view__divider" />
       <p class="main-view__description">Enter one or more IP addresses and get their country</p>
 
-      <List
+      <ListComponent
         :items="items"
         :virtualScroll="false"
         :empty-message="'No IP addresses added yet. Click Add to get started.'"
@@ -24,14 +24,14 @@
             @delete="onDelete"
           />
         </template>
-      </List>
+      </ListComponent>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import List from '@list-components/../lib/list/list.component.vue'
+import {ListComponent} from '@list-components/list.component'
 import IpLookupItem from '../components/IpLookupItem.vue'
 import type { IpLookupItemModel } from '../models/ipLookup.model'
 import { lookupIp } from '../services/ipLookup.service'
@@ -170,7 +170,7 @@ onUnmounted(() => {
   direction: ltr;
   text-align: left;
   font-family: system-ui;
-  
+
   &__container {
     background: $bg-white;
     border-radius: 8px;

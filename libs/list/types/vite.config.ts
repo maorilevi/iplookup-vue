@@ -33,7 +33,7 @@ export default async () => {
         transformMixedEsModules: true,
       },
       lib: {
-        entry: 'src/index.ts',
+        entry: 'src/public-api/index.ts',
         name: 'types',
         fileName: 'index',
         formats: ['es'],

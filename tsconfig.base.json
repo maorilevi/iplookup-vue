@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@ip-lookup": ["apps/ip-lookup/src/app/index.ts"],
+      "@ip-lookup": ["apps/ip-lookup/src/public-api/index.ts"],
       "@list-components": ["libs/list/components/src/public-api/index.ts"],
       "@list-components/*": ["libs/list/components/src/public-api/*"],
       "@list-types": ["libs/list/types/src/public-api/index.ts"],

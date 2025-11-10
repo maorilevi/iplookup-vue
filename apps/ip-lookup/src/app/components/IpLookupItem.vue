@@ -11,18 +11,41 @@
         placeholder="Enter IP address"
         class="ip-item__input"
         :class="{ 'ip-item__input--error': showValidationError }"
-        :disabled="item.status === 'searching'"
+        :readonly="item.status === 'searching'"
       />
 
+      <!-- Loader during search -->
+      <div v-if="item.status === 'searching'" class="ip-item__loader"></div>
+
+      <!-- Flag after successful search -->
       <img
-        v-if="item.countryCode"
+        v-else-if="item.countryCode"
         :src="getFlagUrl(item.countryCode)"
         :alt="item.country"
         :title="item.country"
         class="ip-item__flag"
       />
 
-      <span v-if="item.localTime" class="ip-item__time">{{ item.localTime }}</span>
+      <!-- Time display -->
+      <span v-if="item.localTime && item.status !== 'searching'" class="ip-item__time">{{ item.localTime }}</span>
+
+      <!-- Error icon with tooltip -->
+      <div 
+        v-if="item.status === 'error' && item.error" 
+        class="ip-item__error-icon"
+        :title="item.error"
+      >
+        ⚠
+      </div>
+
+      <!-- Validation error icon with tooltip -->
+      <div 
+        v-else-if="showValidationError" 
+        class="ip-item__error-icon"
+        title="Invalid IP address format"
+      >
+        ⚠
+      </div>
 
       <button
         class="ip-item__delete"
@@ -31,10 +54,6 @@
       >
         ×
       </button>
-    </div>
-
-    <div v-if="showValidationError" class="ip-item-error">
-      Invalid IP address format. Please enter a valid IP address.
     </div>
   </div>
 </template>
@@ -136,7 +155,7 @@ function getFlagUrl(countryCode: string): string {
   }
 
   &--status-error {
-    background-color: $status-error-bg;
+    background-color: $status-idle-bg; // No red background
   }
 
   // Elements
@@ -183,6 +202,15 @@ function getFlagUrl(countryCode: string): string {
     }
   }
 
+  &__loader {
+    width: 35px;
+    height: 35px;
+    border: 3px solid $border-color-light;
+    border-top-color: $color-primary;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
   &__flag {
     object-fit: contain;
     box-shadow: $shadow-sm;
@@ -198,6 +226,50 @@ function getFlagUrl(countryCode: string): string {
     color: $text-tertiary;
     min-width: 80px;
     text-align: center;
+  }
+
+  &__error-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    font-size: 24px;
+    color: $color-error;
+    cursor: help;
+    
+    &:hover .ip-item__tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  &__tooltip {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background-color: $text-primary;
+    color: $bg-white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: $shadow-md;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      right: 12px;
+      border: 6px solid transparent;
+      border-bottom-color: $text-primary;
+    }
   }
 
   &__delete {
@@ -225,27 +297,12 @@ function getFlagUrl(countryCode: string): string {
 
 .ip-item-wrapper {
   position: relative;
+  overflow: visible;
 }
 
-.ip-item-error {
-  padding: 8px 16px;
-  padding-left: 58px; // Align with input (after number circle)
-  color: $color-error;
-  font-size: 12px;
-  direction: ltr;
-  text-align: left;
-  background-color: $bg-white;
-  animation: slideDown 0.3s ease-out;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
+@keyframes spin {
   to {
-    opacity: 1;
-    transform: translateY(0);
+    transform: rotate(360deg);
   }
 }
 </style>

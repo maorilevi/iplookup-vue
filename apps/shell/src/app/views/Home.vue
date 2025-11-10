@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IpLookupView } from '../../../../../apps/ip-lookup/src/public-api'
+import { IpLookupView } from '@ip-lookup'
 </script>
 
 <template>
