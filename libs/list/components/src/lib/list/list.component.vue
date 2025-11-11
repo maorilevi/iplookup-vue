@@ -1,29 +1,22 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import {ref} from 'vue'
 import VirtualScroller from 'primevue/virtualscroller'
-import type { ListItemModel } from '@list-types/models/list-item.model'
 import ListItem from '../list-item/list-item.component.vue'
 import ListAddButton from '../list-add-button/list-add-button.component.vue'
+import type {ListEventsModel} from '@list-types/models/list-events.model';
+import type {ListModel} from '@list-types/models/list.model';
+import type {ItemChangeEventModel} from '@list-types/models/item-change-event.model';
+import type {ItemBlurEventModel} from '@list-types/models/item-blur-event.model';
+import type {ItemDeleteEventModel} from '@list-types/models/item-delete-event.model';
 
-const props = withDefaults(defineProps<{
-  items: ListItemModel[]
-  virtualScroll?: boolean
-  itemHeight?: number
-  visibleCount?: number
-  emptyMessage?: string
-}>(), {
+const props = withDefaults(defineProps<ListModel>(), {
   virtualScroll: false,
   itemHeight: 60,
   visibleCount: 10,
   emptyMessage: 'No items yet. Click "Add" to get started.'
 })
 
-const emit = defineEmits<{
-  add: []
-  itemChange: [{ id: string; value: string }]
-  itemBlur: [{ id: string }]
-  itemDelete: [{ id: string }]
-}>()
+const emit = defineEmits<ListEventsModel>()
 
 const virtualScrollerRef = ref<any>(null)
 
@@ -40,6 +33,10 @@ defineExpose({
     }
   }
 })
+const onItemChange = (event: ItemChangeEventModel): any => emit('itemChange', event);
+const onItemBlur = (event: ItemBlurEventModel): any => emit('itemBlur', event)
+const onItemDelete = (event: ItemDeleteEventModel): any => emit('itemDelete', event)
+
 </script>
 
 <template>
@@ -67,16 +64,16 @@ defineExpose({
           name="item"
           :item="item"
           :index="options.index"
-          :on-change="(event: { id: string; value: string }) => emit('itemChange', event)"
-          :on-blur="(event: { id: string }) => emit('itemBlur', event)"
-          :on-delete="(event: { id: string }) => emit('itemDelete', event)"
+          :itemChange="onItemChange"
+          :itemBlur="onItemBlur"
+          :itemDelete="onItemDelete"
         >
           <ListItem
             :item="item"
-            :index="index"
-            @change="emit('itemChange', $event)"
-            @blur="emit('itemBlur', $event)"
-            @delete="emit('itemDelete', $event)"
+            :index="options.index"
+            @itemChange="emit('itemChange', $event)"
+            @itemBlur="emit('itemBlur', $event)"
+            @itemDelete="emit('itemDelete', $event)"
           />
         </slot>
       </template>
@@ -89,16 +86,16 @@ defineExpose({
           name="item"
           :item="item"
           :index="index"
-          :on-change="(event: { id: string; value: string }) => emit('itemChange', event)"
-          :on-blur="(event: { id: string }) => emit('itemBlur', event)"
-          :on-delete="(event: { id: string }) => emit('itemDelete', event)"
+          :itemChange="onItemChange"
+          :itemBlur="onItemBlur"
+          :itemDelete="onItemDelete"
         >
           <ListItem
             :item="item"
             :index="index"
-            @change="emit('itemChange', $event)"
-            @blur="emit('itemBlur', $event)"
-            @delete="emit('itemDelete', $event)"
+            @itemChange="emit('itemChange', $event)"
+            @itemBlur="emit('itemBlur', $event)"
+            @itemDelete="emit('itemDelete', $event)"
           />
         </slot>
       </template>

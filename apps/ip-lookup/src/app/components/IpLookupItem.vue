@@ -30,8 +30,8 @@
       <span v-if="item.localTime && item.status !== 'searching'" class="ip-item__time">{{ item.localTime }}</span>
 
       <!-- Error icon with tooltip -->
-      <div 
-        v-if="item.status === 'error' && item.error" 
+      <div
+        v-if="item.status === 'error' && item.error"
         class="ip-item__error-icon"
         :title="item.error"
       >
@@ -39,8 +39,8 @@
       </div>
 
       <!-- Validation error icon with tooltip -->
-      <div 
-        v-else-if="showValidationError" 
+      <div
+        v-else-if="showValidationError"
         class="ip-item__error-icon"
         title="Invalid IP address format"
       >
@@ -49,7 +49,7 @@
 
       <button
         class="ip-item__delete"
-        @click="$emit('delete', { id: item.id })"
+        @click="$emit('itemDelete', { id: item.id })"
         title="Delete"
       >
         ×
@@ -59,22 +59,20 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed} from 'vue'
+import {ref, computed, watch} from 'vue'
 import {isValidIp} from '@list-utils'
 import {IpLookupItemModel} from "../models/ipLookup.model";
+import type {ItemEvents} from "@list-types/models/item-events.model";
 
 const props = defineProps<{ item: IpLookupItemModel, index: number }>()
 
-const emit = defineEmits<{
-  change: [{ id: string; value: string }]
-  blur: [{ id: string }]
-  delete: [{ id: string }]
-}>()
+const emit = defineEmits<ItemEvents>()
 
 // Track if user has left the input field
 const hasBlurred = ref(false)
 
 const showValidationError = computed(() => {
+  console.log('showValidationError !!!!!!')
   // Only show error after user has left the input
   if (!hasBlurred.value) {
     return false
@@ -100,7 +98,7 @@ const showValidationError = computed(() => {
 
 function onInput(event: Event) {
   const target = event.target as HTMLInputElement
-  emit('change', {id: props.item.id, value: target.value})
+  emit('itemChange', { id: props.item.id, value: target.value, reset: false })
 
   // Reset blur state when user starts typing again
   if (hasBlurred.value && props.item.status !== 'success') {
@@ -110,9 +108,18 @@ function onInput(event: Event) {
 
 function handleBlur() {
   hasBlurred.value = true
-  emit('blur', {id: props.item.id})
+  emit('itemBlur', {id: props.item.id})
 }
 
+watch(
+  () => props.item.status,
+  (newStatus) => {
+    // Reset item information when IP address is invalid
+    if (newStatus === 'error') {
+      emit('itemChange', {id: props.item.id, value: props.item.value, reset: true})
+    }
+  }
+)
 
 function getFlagUrl(countryCode: string): string {
   const code = countryCode.toLowerCase()
@@ -182,7 +189,8 @@ function getFlagUrl(countryCode: string): string {
     font-size: 14px;
     transition: all 0.3s;
     min-width: 0;
-
+    width: 300px;
+    max-width: 300px;
     &:focus {
       outline: none;
       border-color: $color-primary;

@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import type { ListItemModel } from '@list-types/models/list-item.model'
-
+import type { ListItemModel } from '@list-types/models/list-item.model';
+import type { ItemEvents } from '@list-types/models/item-events.model';
 defineProps<{
   item: ListItemModel,
   index: number,
 }>()
 
-defineEmits<{
-  change: [{ id: string; value: string }]
-  blur: [{ id: string }]
-  delete: [{ id: string }]
-}>()
+defineEmits<ItemEvents>()
+
 </script>
 
 <template>
@@ -20,14 +17,14 @@ defineEmits<{
     <input
       type="text"
       :value="item.value"
-      @input="$emit('change', { id: item.id, value: ($event.target as HTMLInputElement).value })"
-      @blur="$emit('blur', { id: item.id })"
+      @input="$emit('itemChange', { id: item.id, value: ($event.target as HTMLInputElement).value , reset: false})"
+      @blur="$emit('itemBlur', { id: item.id })"
       placeholder="Enter value"
       class="list-item__input"
     />
 
     <button
-      @click="$emit('delete', { id: item.id })"
+      @click="$emit('itemDelete', { id: item.id })"
       class="list-item__delete"
       :aria-label="`Delete ${item.value}`"
     >

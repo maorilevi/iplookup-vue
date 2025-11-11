@@ -2,7 +2,7 @@
   <section class="main-view">
     <div class="main-view__container">
       <h2 class="main-view__title">IP Lookup</h2>
-      <hr class="main-view__divider" />
+      <hr class="main-view__divider"/>
       <p class="main-view__description">Enter one or more IP addresses and get their country</p>
 
       <ListComponent
@@ -15,13 +15,13 @@
         @itemDelete="onItemDelete"
       >
         <!-- Custom IP item component -->
-        <template #item="{ item, onChange, onBlur, onDelete, index }">
+        <template #item="{ item, itemChange, itemBlur, itemDelete, index }">
           <IpLookupItem
             :item="item"
             :index="index"
-            @change="onChange"
-            @blur="onBlur"
-            @delete="onDelete"
+            @itemChange="itemChange"
+            @itemBlur="itemBlur"
+            @itemDelete="itemDelete"
           />
         </template>
       </ListComponent>
@@ -30,13 +30,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import {ListComponent} from '@list-components/list.component'
-import IpLookupItem from '../components/IpLookupItem.vue'
-import type { IpLookupItemModel } from '../models/ipLookup.model'
-import { lookupIp } from '../services/ipLookup.service'
-import { isValidIp } from '@list-utils'
-
+import {ref, onUnmounted} from 'vue';
+import {ListComponent} from '@list-components/list.component';
+import IpLookupItem from '../components/IpLookupItem.vue';
+import type {IpLookupItemModel} from '../models/ipLookup.model';
+import {lookupIp} from '../services/ipLookup.service';
+import {isValidIp} from '@list-utils';
+import type {ItemChangeEventModel} from '@list-types/models/item-change-event.model';
 // The main state array
 const items = ref<IpLookupItemModel[]>([])
 
@@ -52,20 +52,24 @@ function addItem() {
   })
 }
 
-function onItemChange({ id, value }: { id: string; value: string }) {
+function onItemChange({id, value}: ItemChangeEventModel) {
   const item = items.value.find(i => i.id === id)
   if (item) {
     item.label = value // Update label (what's shown in input)
-    item.value = value || item.id // Update value for key (or keep UUID if empty)
+    item.value = value // Update value for key (or keep UUID if empty)
     // Clear error when user starts typing again
     if (item.status === 'error') {
       item.status = 'idle'
+      item.country = undefined;
+      item.countryCode = undefined;
+      item.localTime = undefined;
+      item.timezone = undefined;
       item.error = undefined
     }
   }
 }
 
-async function onItemBlur({ id }: { id: string }) {
+async function onItemBlur({id}: { id: string }) {
   const item = items.value.find(i => i.id === id)
   if (!item) return
 
@@ -137,7 +141,7 @@ function updateLocalTime(item: IpLookupItemModel) {
   }
 }
 
-function onItemDelete({ id }: { id: string }) {
+function onItemDelete({id}: { id: string }) {
   const item = items.value.find(i => i.id === id)
 
   // Clear interval when item is deleted
@@ -153,7 +157,6 @@ function onItemDelete({ id }: { id: string }) {
 }
 
 // Cleanup all intervals on unmount
-import { onUnmounted } from 'vue'
 onUnmounted(() => {
   timeIntervals.forEach(interval => clearInterval(interval))
   timeIntervals.clear()
