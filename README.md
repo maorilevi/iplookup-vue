@@ -452,6 +452,36 @@ Contributions are welcome! Please follow these steps:
 
 ---
 
+## 🚀 CI/CD Pipeline
+
+This project includes a complete CI/CD pipeline using **GitHub Actions** and **Google Cloud Platform App Engine**.
+
+### Continuous Integration (CI)
+
+Automatically runs on every push and pull request:
+- ✅ Linting
+- ✅ Unit tests (50+ tests)
+- ✅ Build verification
+- ✅ Multi-version Node.js testing (18.x, 20.x)
+
+### Continuous Deployment (CD)
+
+Automatically deploys to GCP App Engine on push to `main`:
+- 🚀 Shell Application → `https://YOUR-PROJECT-ID.appspot.com`
+- 🚀 IP Lookup Application → `https://ip-lookup-dot-YOUR-PROJECT-ID.appspot.com`
+
+### Setup Guide
+
+For detailed CI/CD setup instructions, see **[CICD-SETUP.md](./CICD-SETUP.md)**
+
+Quick setup steps:
+1. Create GCP project and enable App Engine
+2. Create service account with deployment permissions
+3. Add GitHub secrets (`GCP_PROJECT_ID`, `GCP_SA_KEY`)
+4. Push to `main` branch to trigger deployment
+
+---
+
 ## 📧 Contact
 
 For questions or support, please open an issue in the repository.

@@ -1,0 +1,24 @@
+runtime: nodejs20
+
+service: default
+
+instance_class: F1
+
+automatic_scaling:
+  min_instances: 0
+  max_instances: 2
+  target_cpu_utilization: 0.65
+
+handlers:
+  # Serve static files from dist/apps/shell
+  - url: /assets
+    static_dir: dist/apps/shell/assets
+    secure: always
+
+  - url: /.*
+    static_files: dist/apps/shell/index.html
+    upload: dist/apps/shell/index.html
+    secure: always
+
+env_variables:
+  NODE_ENV: 'production'

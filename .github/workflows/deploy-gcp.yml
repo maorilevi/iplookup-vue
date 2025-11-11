@@ -1,0 +1,56 @@
+name: CD - Deploy to GCP App Engine
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  deploy:
+    name: Deploy to App Engine
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Run tests
+        run: npm test
+      
+      - name: Build applications
+        run: |
+          npm run build:shell
+          npm run build:ip-lookup
+      
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+      
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+      
+      - name: Deploy Shell to App Engine
+        run: |
+          gcloud app deploy app-shell.yaml --quiet
+      
+      - name: Deploy IP Lookup to App Engine
+        run: |
+          gcloud app deploy app-ip-lookup.yaml --quiet
+      
+      - name: Show deployment URL
+        run: |
+          echo "Shell deployed to: https://${{ secrets.GCP_PROJECT_ID }}.appspot.com"
+          echo "IP Lookup deployed to: https://ip-lookup-dot-${{ secrets.GCP_PROJECT_ID }}.appspot.com"
