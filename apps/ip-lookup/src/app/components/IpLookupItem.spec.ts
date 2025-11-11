@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import IpLookupItem from './IpLookupItem.vue';
 import type { IpLookupItemModel } from '../models/ipLookup.model';

@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import MainLayout from './MainLayout.vue';
-import { createRouter, createWebHistory } from 'vue-router';
 
 /**
  * Test suite for MainLayout component
