@@ -9,6 +9,13 @@ import type {ItemChangeEventModel} from '@list-types/models/item-change-event.mo
 import type {ItemBlurEventModel} from '@list-types/models/item-blur-event.model';
 import type {ItemDeleteEventModel} from '@list-types/models/item-delete-event.model';
 
+/**
+ * List Component
+ * A flexible list component that supports virtual scrolling for large datasets
+ * and provides customizable item rendering through slots
+ */
+
+// Component props with defaults
 const props = withDefaults(defineProps<ListModel>(), {
   virtualScroll: false,
   itemHeight: 60,
@@ -16,25 +23,51 @@ const props = withDefaults(defineProps<ListModel>(), {
   emptyMessage: 'No items yet. Click "Add" to get started.'
 })
 
+// Component events
 const emit = defineEmits<ListEventsModel>()
 
+/**
+ * Reference to the virtual scroller component
+ * Used for programmatic scrolling operations
+ */
 const virtualScrollerRef = ref<any>(null)
 
-// Expose methods for parent components
+/**
+ * Expose methods for parent components to control scrolling
+ */
 defineExpose({
+  /**
+   * Scroll to the top of the list
+   */
   scrollToTop: () => {
     if (virtualScrollerRef.value) {
       virtualScrollerRef.value.scrollToIndex(0)
     }
   },
+  /**
+   * Scroll to a specific item by index
+   * @param index - The index of the item to scroll to
+   */
   scrollToItem: (index: number) => {
     if (virtualScrollerRef.value) {
       virtualScrollerRef.value.scrollToIndex(index)
     }
   }
 })
+
+/**
+ * Handle item change events and forward to parent
+ */
 const onItemChange = (event: ItemChangeEventModel): any => emit('itemChange', event);
+
+/**
+ * Handle item blur events and forward to parent
+ */
 const onItemBlur = (event: ItemBlurEventModel): any => emit('itemBlur', event)
+
+/**
+ * Handle item delete events and forward to parent
+ */
 const onItemDelete = (event: ItemDeleteEventModel): any => emit('itemDelete', event)
 
 </script>

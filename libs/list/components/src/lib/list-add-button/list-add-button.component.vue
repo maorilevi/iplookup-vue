@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * List Add Button Component
+ * A simple button component for adding new items to the list
+ * Emits an 'add' event when clicked
+ */
 defineEmits<{
   add: []
 }>()

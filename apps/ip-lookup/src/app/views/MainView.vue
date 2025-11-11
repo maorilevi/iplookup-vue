@@ -52,18 +52,24 @@ function addItem() {
   })
 }
 
-function onItemChange({id, value}: ItemChangeEventModel) {
+function onItemChange({id, value, reset}: ItemChangeEventModel) {
   const item = items.value.find(i => i.id === id)
   if (item) {
     item.label = value // Update label (what's shown in input)
     item.value = value // Update value for key (or keep UUID if empty)
     // Clear error when user starts typing again
+    if (reset) {
+      item.country = undefined
+      item.countryCode = undefined
+      item.localTime = undefined
+      item.timezone = undefined
+      // DO NOT touch status or error here
+      return
+    }
+
+    // normal typing after error
     if (item.status === 'error') {
       item.status = 'idle'
-      item.country = undefined;
-      item.countryCode = undefined;
-      item.localTime = undefined;
-      item.timezone = undefined;
       item.error = undefined
     }
   }

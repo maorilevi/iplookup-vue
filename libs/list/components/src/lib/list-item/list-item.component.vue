@@ -1,11 +1,22 @@
 <script setup lang="ts">
 import type { ListItemModel } from '@list-types/models/list-item.model';
 import type { ItemEvents } from '@list-types/models/item-events.model';
+
+/**
+ * List Item Component
+ * A basic list item component with an input field and delete button
+ * This serves as the default item renderer and can be replaced via slots
+ */
+
+// Component props
 defineProps<{
+  /** The list item data */
   item: ListItemModel,
+  /** The item's index in the list */
   index: number,
 }>()
 
+// Component events
 defineEmits<ItemEvents>()
 
 </script>

@@ -7,6 +7,7 @@ describe('App', () => {
   it('renders properly', async () => {
     const wrapper = mount(App, { global: { plugins: [router] } });
     await router.isReady();
-    expect(wrapper.text()).toContain('Welcome ip-lookup 👋');
+    // The app renders the main view with IP lookup functionality
+    expect(wrapper.text()).toContain('IP Lookup');
   });
 });

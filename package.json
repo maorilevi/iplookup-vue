@@ -2,7 +2,18 @@
   "name": "@torq-task/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "test": "nx run-many -t test --all",
+    "start:shell": "nx serve shell",
+    "start:ip-lookup": "nx serve ip-lookup",
+    "build:shell": "nx build shell",
+    "build:ip-lookup": "nx build ip-lookup",
+    "test:shell": "nx test shell",
+    "test:ip-lookup": "nx test ip-lookup",
+    "lint": "nx run-many -t lint --all",
+    "lint:shell": "nx lint shell",
+    "lint:ip-lookup": "nx lint ip-lookup"
+  },
   "private": true,
   "devDependencies": {
     "@eslint/js": "^9.8.0",

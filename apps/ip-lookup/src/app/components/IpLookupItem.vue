@@ -59,20 +59,56 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * IP Lookup Item Component
+ *
+ * Displays an individual IP address entry in the lookup list.
+ * Features:
+ * - Real-time IP address validation
+ * - Visual feedback for search status (idle, searching, success, error)
+ * - Country flag display for successful lookups
+ * - Local time display for the IP location
+ * - Delete functionality
+ * - Validation error indicators
+ */
+
 import {ref, computed, watch} from 'vue'
 import {isValidIp} from '@list-utils'
 import {IpLookupItemModel} from "../models/ipLookup.model";
 import type {ItemEvents} from "@list-types/models/item-events.model";
 
+/**
+ * Component Props
+ * @property {IpLookupItemModel} item - The IP lookup item data
+ * @property {number} index - The item's position in the list (0-based)
+ */
 const props = defineProps<{ item: IpLookupItemModel, index: number }>()
 
+/**
+ * Component Events
+ * Emits itemChange, itemBlur, and itemDelete events
+ */
 const emit = defineEmits<ItemEvents>()
 
-// Track if user has left the input field
+/**
+ * Tracks whether the user has left the input field
+ * Used to determine when to show validation errors
+ */
 const hasBlurred = ref(false)
 
+/**
+ * Computed property that determines if validation error should be displayed
+ *
+ * Validation error is shown only when:
+ * - User has blurred (left) the input field
+ * - Input contains text
+ * - IP address format is invalid
+ * - Not currently searching or showing API error
+ * - Not in success state
+ *
+ * @returns {boolean} True if validation error should be displayed
+ */
 const showValidationError = computed(() => {
-  console.log('showValidationError !!!!!!')
   // Only show error after user has left the input
   if (!hasBlurred.value) {
     return false
@@ -96,6 +132,14 @@ const showValidationError = computed(() => {
   return !isValidIp(props.item.value.trim())
 })
 
+/**
+ * Handles input changes in the IP address field
+ *
+ * @param {Event} event - The input event
+ *
+ * Emits itemChange event with the new value
+ * Resets blur state when user starts typing again (unless search was successful)
+ */
 function onInput(event: Event) {
   const target = event.target as HTMLInputElement
   emit('itemChange', { id: props.item.id, value: target.value, reset: false })
@@ -106,21 +150,39 @@ function onInput(event: Event) {
   }
 }
 
+/**
+ * Handles blur event when user leaves the input field
+ *
+ * Sets hasBlurred flag to true and emits itemBlur event
+ * This triggers validation error display if IP format is invalid
+ */
 function handleBlur() {
   hasBlurred.value = true
   emit('itemBlur', {id: props.item.id})
 }
 
+/**
+ * Watches for status changes on the item
+ *
+ * When status changes to 'error', emits itemChange with reset flag
+ * to clear country information and local time from the item
+ */
 watch(
   () => props.item.status,
-  (newStatus) => {
+  (newStatus, oldValue) => {
     // Reset item information when IP address is invalid
-    if (newStatus === 'error') {
+    if (newStatus === 'error' && oldValue !== 'error') {
       emit('itemChange', {id: props.item.id, value: props.item.value, reset: true})
     }
   }
 )
 
+/**
+ * Generates the URL for a country flag image
+ *
+ * @param {string} countryCode - The ISO 3166-1 alpha-2 country code
+ * @returns {string} URL to the country flag image from flagcdn.com
+ */
 function getFlagUrl(countryCode: string): string {
   const code = countryCode.toLowerCase()
   return `https://flagcdn.com/w40/${code}.png`
