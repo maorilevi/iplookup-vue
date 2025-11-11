@@ -1,24 +1,37 @@
 <script setup lang="ts">
-import type { ListItemModel } from '@list-types/models/list-item.model';
-import type { ItemEvents } from '@list-types/models/item-events.model';
+import type { ListItemModel } from '@list-types/models/list-item.model'
+import type { ItemEvents } from '@list-types/models/item-events.model'
 
-/**
- * List Item Component
- * A basic list item component with an input field and delete button
- * This serves as the default item renderer and can be replaced via slots
- */
-
-// Component props
-defineProps<{
-  /** The list item data */
-  item: ListItemModel,
-  /** The item's index in the list */
-  index: number,
+// Props
+const props = defineProps<{
+  item: ListItemModel
+  index: number
 }>()
 
-// Component events
-defineEmits<ItemEvents>()
+// Emits
+const emit = defineEmits<ItemEvents>()
 
+/**
+ * Emits an 'itemChange' event when user types in the input.
+ */
+function onInputChange(event: Event) {
+  const target = event.target as HTMLInputElement
+  emit('itemChange', { id: props.item.id, value: target.value, reset: false })
+}
+
+/**
+ * Emits an 'itemBlur' event when user leaves the input.
+ */
+function onInputBlur() {
+  emit('itemBlur', { id: props.item.id })
+}
+
+/**
+ * Emits an 'itemDelete' event when user clicks delete.
+ */
+function onDelete() {
+  emit('itemDelete', { id: props.item.id })
+}
 </script>
 
 <template>
@@ -28,14 +41,14 @@ defineEmits<ItemEvents>()
     <input
       type="text"
       :value="item.value"
-      @input="$emit('itemChange', { id: item.id, value: ($event.target as HTMLInputElement).value , reset: false})"
-      @blur="$emit('itemBlur', { id: item.id })"
+      @input="onInputChange"
+      @blur="onInputBlur"
       placeholder="Enter value"
       class="list-item__input"
     />
 
     <button
-      @click="$emit('itemDelete', { id: item.id })"
+      @click="onDelete"
       class="list-item__delete"
       :aria-label="`Delete ${item.value}`"
     >
@@ -61,7 +74,6 @@ defineEmits<ItemEvents>()
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
-  // BEM - Elements
   &__label {
     font-weight: 600;
     font-size: 14px;
