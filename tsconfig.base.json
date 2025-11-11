@@ -21,7 +21,8 @@
       "@list-types": ["libs/list/types/src/public-api/index.ts"],
       "@list-types/*": ["libs/list/types/src/public-api/*"],
       "@list-composables": ["libs/list/composables/src/index.ts"],
-      "@list-utils": ["libs/list/utils/src/index.ts"]
+      "@list-utils": ["libs/list/utils/src/public-api/index.ts"],
+      "@list-utils/*": ["libs/list/utils/src/public-api/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

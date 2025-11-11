@@ -73,7 +73,7 @@
  */
 
 import {ref, computed, watch} from 'vue'
-import {isValidIp} from '@list-utils'
+import {isValidIp} from '@list-utils/list-validation'
 import {IpLookupItemModel} from "../models/ipLookup.model";
 import type {ItemEvents} from "@list-types/models/item-events.model";
 
@@ -142,7 +142,7 @@ const showValidationError = computed(() => {
  */
 function onInput(event: Event) {
   const target = event.target as HTMLInputElement
-  emit('itemChange', { id: props.item.id, value: target.value, reset: false })
+  emit('itemChange', {id: props.item.id, value: target.value, reset: false})
 
   // Reset blur state when user starts typing again
   if (hasBlurred.value && props.item.status !== 'success') {
@@ -253,6 +253,7 @@ function getFlagUrl(countryCode: string): string {
     min-width: 0;
     width: 300px;
     max-width: 300px;
+
     &:focus {
       outline: none;
       border-color: $color-primary;
