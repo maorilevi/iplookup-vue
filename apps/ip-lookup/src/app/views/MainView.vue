@@ -75,58 +75,73 @@ function onItemChange({id, value, reset}: ItemChangeEventModel) {
   }
 }
 
+function clearItemInterval(itemId: string) {
+  const existingInterval = timeIntervals.get(itemId)
+  if (existingInterval) {
+    clearInterval(existingInterval)
+    timeIntervals.delete(itemId)
+  }
+}
+
+function setupTimeInterval(item: IpLookupItemModel) {
+  updateLocalTime(item)
+  
+  const interval = window.setInterval(() => {
+    updateLocalTime(item)
+  }, 1000)
+  
+  timeIntervals.set(item.id, interval)
+}
+
+function handleIpLookupSuccess(item: IpLookupItemModel, data: any) {
+  item.country = data.country
+  item.countryCode = data.countryCode
+  item.timezone = data.timezone
+  item.city = data.city
+  item.region = data.region
+  
+  setupTimeInterval(item)
+  item.status = 'success'
+}
+
+function handleIpLookupError(item: IpLookupItemModel, error: any) {
+  item.status = 'error'
+  item.error = error.message || 'Failed to lookup IP'
+}
+
+function validateItemInput(item: IpLookupItemModel): string | null {
+  const trimmedValue = item.value.trim()
+  
+  if (!trimmedValue || trimmedValue === item.id) {
+    return null
+  }
+  
+  if (!isValidIp(trimmedValue)) {
+    item.status = 'error'
+    item.error = 'Invalid IP address format'
+    return null
+  }
+  
+  return trimmedValue
+}
+
 async function onItemBlur({id}: { id: string }) {
   const item = items.value.find(i => i.id === id)
   if (!item) return
 
-  const trimmedValue = item.value.trim()
+  const ipAddress = validateItemInput(item)
+  if (!ipAddress) return
 
-  // If value is empty or is UUID, don't process
-  if (!trimmedValue || trimmedValue === item.id) return
+  clearItemInterval(item.id)
 
-  // Validate IP format
-  if (!isValidIp(trimmedValue)) {
-    item.status = 'error'
-    item.error = 'Invalid IP address format'
-    return
-  }
-
-  // Clear previous interval if exists
-  const existingInterval = timeIntervals.get(item.value)
-  if (existingInterval) {
-    clearInterval(existingInterval)
-    timeIntervals.delete(item.value)
-  }
-
-  const ipAddress = trimmedValue
-
-  // Fetch from API (no cache)
   item.status = 'searching'
   item.error = undefined
 
   try {
     const data = await lookupIp(ipAddress)
-
-    item.country = data.country
-    item.countryCode = data.countryCode
-    item.timezone = data.timezone
-    item.city = data.city
-    item.region = data.region
-
-    // Update time immediately
-    updateLocalTime(item)
-
-    // Start live clock update for the IP's timezone
-    const interval = window.setInterval(() => {
-      updateLocalTime(item)
-    }, 1000)
-
-    timeIntervals.set(item.id, interval)
-
-    item.status = 'success'
+    handleIpLookupSuccess(item, data)
   } catch (err: any) {
-    item.status = 'error'
-    item.error = err.message || 'Failed to lookup IP'
+    handleIpLookupError(item, err)
   }
 }
 
@@ -148,17 +163,7 @@ function updateLocalTime(item: IpLookupItemModel) {
 }
 
 function onItemDelete({id}: { id: string }) {
-  const item = items.value.find(i => i.id === id)
-
-  // Clear interval when item is deleted
-  if (item) {
-    const existingInterval = timeIntervals.get(item.value)
-    if (existingInterval) {
-      clearInterval(existingInterval)
-      timeIntervals.delete(item.value)
-    }
-  }
-
+  clearItemInterval(id)
   items.value = items.value.filter(i => i.id !== id)
 }
 
